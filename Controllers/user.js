@@ -4,8 +4,10 @@ import jwt from 'jsonwebtoken';
 
 //  register
 export const register = async(req,res)=>{
-    const {name,email,password}=req.body;
+    const {firstName,lastName,email,password}=req.body;
+    
     try{
+        console.log("back",firstName,lastName,email,password)
         let user;
         user=await User.findOne({email});
         if(user)
@@ -15,9 +17,9 @@ export const register = async(req,res)=>{
         }
         
         const hashpass = await bcrypt.hash(password,10);
-        user =User.create({name,email,password:hashpass});
-        // console.log("user detail : ",user);
-       res.json({message:"user register Successfully...",success:true,user})
+        user = await User.create({firstName,lastName,email,password:hashpass});
+        console.log("user detail : ",user);
+        return res.json({message:"user register Successfully...",success:true,user})
     }
     catch(error){
       res.json({message:error.message})
@@ -30,6 +32,7 @@ export const login= async(req,res)=>{
 
     try{
        let user=await User.findOne({email}); 
+       console.log("user",user);
        if(!user)
        {
          return res.json({message:"user not found..",success:false});
@@ -42,8 +45,8 @@ export const login= async(req,res)=>{
         expiresIn:'365d'
        })
         
-      
-        res.json({message:`Welcome ${user.name}`,success:true,token});
+      console.log(user.firstName);
+        res.json({message:`Welcome ${user.firstName}`,success:true,token});
     }
     catch(error){
         res.json({message:error.message});
